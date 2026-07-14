@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>틈 — 불편의 틈을 편리함으로</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-void: #04050c;
+    --bg-deep: #0a0e1d;
+    --star-gold: #f4c77e;
+    --star-gold-soft: #f4c77e88;
+    --line-lavender: #9099e8;
+    --ink: #ece8dd;
+    --ink-muted: #838aa8;
+    --ink-dim: #6b7290;
+    --glass: rgba(14, 18, 34, 0.72);
+    --glass-border: rgba(244, 199, 126, 0.18);
+    --serif: 'Noto Sans KR', sans-serif;
+    --sans: 'Noto Sans KR', sans-serif;
+  }
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  html{ scroll-behavior: smooth; }
+  body{
+    background: var(--bg-void);
+    color: var(--ink);
+    font-family: var(--sans);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+  ::selection{ background: var(--star-gold); color: #1a1204; }
+
+  /* ambient starfield backdrop, fixed behind everything */
+  #ambient{
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  }
+
+  section{ position: relative; z-index: 1; }
+
+  /* ---------- 01 HERO ---------- */
+  .hero{
+    height: 100svh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 24px;
+  }
+  .hero-star{
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--star-gold);
+    box-shadow: 0 0 8px 2px var(--star-gold-soft), 0 0 40px 10px rgba(244,199,126,0.15);
+    opacity: 0;
+    animation: heroStarIn 2.4s ease-out forwards;
+  }
+  @keyframes heroStarIn{
+    0%{ opacity:0; transform: scale(0.2); }
+    60%{ opacity:1; transform: scale(1.3); }
+    100%{ opacity:1; transform: scale(1); }
+  }
+  .hero-eyebrow{
+    font-family: var(--serif);
+    font-size: clamp(15px, 2vw, 19px);
+    color: var(--ink-dim);
+    margin-top: 34px;
+    opacity: 0;
+    animation: fadeUp 1.4s ease-out 2.2s forwards;
+    letter-spacing: 0.02em;
+  }
+  .hero-title{
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 48px);
+    line-height: 1.5;
+    max-width: 720px;
+    margin-top: 18px;
+    opacity: 0;
+    animation: fadeUp 1.4s ease-out 2.8s forwards;
+  }
+  .hero-sub{
+    margin-top: 22px;
+    color: var(--ink-muted);
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    opacity: 0;
+    animation: fadeUp 1.4s ease-out 3.4s forwards;
+  }
+  @keyframes fadeUp{
+    0%{ opacity:0; transform: translateY(14px); }
+    100%{ opacity:1; transform: translateY(0); }
+  }
+  .hero-cta{
+    margin-top: 46px;
+    opacity: 0;
+    animation: fadeUp 1.4s ease-out 4s forwards;
+  }
+  .btn{
+    font-family: var(--sans);
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--bg-void);
+    background: var(--star-gold);
+    border: none;
+    border-radius: 999px;
+    padding: 14px 30px;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+    box-shadow: 0 0 0 rgba(244,199,126,0);
+  }
+  .btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(244,199,126,0.28);
+  }
+  .btn-ghost{
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--glass-border);
+  }
+  .btn-ghost:hover{
+    background: rgba(244,199,126,0.08);
+    box-shadow: none;
+  }
+  .scroll-hint{
+    position:absolute; bottom: 34px; left:50%; transform: translateX(-50%);
+    font-size: 11px; letter-spacing: 0.2em; color: var(--ink-dim);
+    opacity: 0; animation: fadeUp 1.2s ease-out 4.6s forwards, bob 2.4s ease-in-out 5.5s infinite;
+  }
+  @keyframes bob{ 0%,100%{ transform: translate(-50%,0);} 50%{ transform: translate(-50%,6px);} }
+
+  /* ---------- 02 INPUT ---------- */
+  .input-section{
+    min-height: 100svh;
+    display:flex; align-items:center; justify-content:center;
+    padding: 90px 24px;
+  }
+  .input-card{
+    width: 100%; max-width: 560px;
+    text-align: center;
+  }
+  .input-kicker{
+    font-family: var(--serif);
+    color: var(--star-gold);
+    font-size: 14px;
+    margin-bottom: 14px;
+  }
+  .input-title{
+    font-family: var(--serif);
+    font-size: clamp(22px, 3.4vw, 30px);
+    line-height: 1.5;
+    margin-bottom: 36px;
+  }
+  .gap-textarea{
+    width: 100%;
+    min-height: 108px;
+    resize: vertical;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    outline: none;
+    transition: border-color .25s ease, box-shadow .25s ease;
+  }
+  .gap-textarea::placeholder{ color: var(--ink-dim); }
+  .gap-textarea:focus{
+    border-color: rgba(244,199,126,0.5);
+    box-shadow: 0 0 0 4px rgba(244,199,126,0.08);
+  }
+  .input-example{
+    margin-top: 12px; text-align: left;
+    font-size: 12.5px; color: var(--ink-dim);
+  }
+  .input-actions{ margin-top: 26px; }
+
+  /* transform stage: overlays the textarea while animating text -> star */
+  .transform-stage{
+    position: fixed; inset: 0; z-index: 50;
+    display: none;
+    align-items: center; justify-content: center;
+    background: rgba(4,5,12,0.92);
+    backdrop-filter: blur(6px);
+  }
+  .transform-stage.active{ display: flex; }
+  .transform-text{
+    font-family: var(--serif);
+    font-size: clamp(20px, 3.2vw, 28px);
+    color: var(--ink);
+    text-align: center;
+    max-width: 640px;
+    padding: 0 24px;
+    transition: font-size 1.6s cubic-bezier(.7,0,.3,1), opacity 1.6s ease, letter-spacing 1.6s ease;
+  }
+  .transform-text.shrink{
+    font-size: 8px;
+    opacity: 0;
+    letter-spacing: -0.05em;
+  }
+  .transform-star{
+    position: absolute;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--star-gold);
+    box-shadow: 0 0 10px 3px var(--star-gold-soft);
+    opacity: 0; transform: scale(0);
+    transition: opacity 1s ease .9s, transform 1.4s cubic-bezier(.2,1.4,.4,1) .9s;
+  }
+  .transform-star.show{ opacity: 1; transform: scale(1); }
+  .transform-caption{
+    position: absolute; bottom: 18%; left:50%; transform: translateX(-50%);
+    font-family: var(--serif); font-size: 15px; color: var(--ink-dim);
+    opacity: 0; transition: opacity 1.2s ease 2.1s;
+    text-align:center; width: 90%;
+  }
+  .transform-caption.show{ opacity: 1; }
+
+  /* ---------- 03/04 UNIVERSE ---------- */
+  .universe-section{
+    min-height: 100svh;
+    position: relative;
+    padding: 90px 0 60px;
+  }
+  .universe-header{
+    text-align: center; padding: 0 24px 40px;
+  }
+  .universe-kicker{ font-family: var(--serif); color: var(--star-gold); font-size: 14px; }
+  .universe-title{ font-family: var(--serif); font-size: clamp(24px,3.4vw,32px); margin-top: 12px; }
+  .universe-desc{ color: var(--ink-muted); font-size: 13.5px; margin-top: 12px; }
+
+  .universe-field{
+    position: relative;
+    width: 100%;
+    height: 640px;
+    max-width: 1180px;
+    margin: 0 auto;
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    background: radial-gradient(ellipse at 50% 30%, rgba(144,153,232,0.06), transparent 60%), var(--bg-deep);
+    overflow: hidden;
+  }
+  .universe-field svg{ position:absolute; inset:0; width:100%; height:100%; }
+
+  .field-star{ cursor: pointer; }
+  .field-star circle.core{ transition: r .25s ease, filter .25s ease; }
+  .field-star:hover circle.core{ r: 6; filter: drop-shadow(0 0 10px var(--star-gold)); }
+  .field-star.bg circle.core{ opacity: .55; }
+  .field-star text{
+    font-family: var(--sans); font-size: 10px; fill: var(--ink-dim);
+    opacity: 0; transition: opacity .2s ease; pointer-events:none;
+  }
+  .field-star:hover text{ opacity: 1; fill: var(--ink); }
+
+  .const-line{
+    stroke: var(--line-lavender);
+    stroke-width: 1;
+    opacity: 0.35;
+    stroke-dasharray: 2 3;
+  }
+  .const-label{
+    font-family: var(--serif); font-size: 11px; fill: var(--line-lavender);
+    opacity: 0.75;
+  }
+
+  .universe-stats{
+    display:flex; gap: 40px; justify-content:center; flex-wrap:wrap;
+    margin: 40px auto 0; max-width: 1180px; padding: 0 24px;
+  }
+  .stat{ text-align:center; }
+  .stat-num{
+    font-family: var(--serif); font-size: clamp(26px,3.6vw,36px); color: var(--star-gold);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-label{ font-size: 12px; color: var(--ink-dim); margin-top: 6px; letter-spacing: .03em; }
+
+  /* ---------- STAR CARD ---------- */
+  .card-overlay{
+    position: fixed; inset:0; z-index: 60;
+    background: rgba(4,5,12,0.6);
+    backdrop-filter: blur(3px);
+    display:none; align-items:center; justify-content:center;
+    padding: 24px;
+  }
+  .card-overlay.active{ display:flex; }
+  .star-card{
+    width: 100%; max-width: 460px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 34px 30px;
+    position: relative;
+    animation: cardIn .4s cubic-bezier(.2,1,.3,1);
+  }
+  @keyframes cardIn{ from{ opacity:0; transform: translateY(12px) scale(.98);} to{ opacity:1; transform:none;} }
+  .card-close{
+    position:absolute; top: 18px; right: 20px;
+    background:none; border:none; color: var(--ink-dim); font-size: 18px; cursor:pointer;
+  }
+  .card-close:hover{ color: var(--ink); }
+  .card-star-icon{ color: var(--star-gold); font-size: 13px; letter-spacing: 4px; margin-bottom: 18px; }
+  .card-text{ font-family: var(--serif); font-size: 19px; line-height: 1.6; margin-bottom: 22px; }
+  .card-meta{ display:flex; gap: 18px; flex-wrap:wrap; font-size: 12.5px; color: var(--ink-muted); margin-bottom: 20px; }
+  .card-meta span b{ color: var(--ink); font-weight: 500; }
+  .card-tags{ display:flex; gap: 8px; flex-wrap:wrap; margin-bottom: 26px; }
+  .tag{
+    font-size: 11.5px; padding: 5px 12px; border-radius: 999px;
+    border: 1px solid var(--glass-border); color: var(--ink-muted);
+  }
+  .card-related-title{ font-size: 12px; color: var(--ink-dim); margin-bottom: 10px; letter-spacing: .04em; }
+  .related-item{
+    font-size: 13.5px; color: var(--ink-muted); padding: 9px 0;
+    border-top: 1px solid rgba(244,199,126,0.1);
+    cursor: pointer; transition: color .2s ease;
+  }
+  .related-item:hover{ color: var(--star-gold); }
+  .related-item::before{ content: "★  "; color: var(--star-gold); font-size: 10px; }
+
+  /* ---------- 09 CLOSING ---------- */
+  .closing{
+    min-height: 100svh;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center; padding: 90px 24px;
+  }
+  .closing-inner{
+    max-width: 620px;
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 1.4s ease, transform 1.4s ease;
+  }
+  .closing-inner.show{ opacity:1; transform: translateY(0); }
+  .closing-inner p{
+    font-family: var(--serif);
+    font-size: clamp(17px, 2.4vw, 22px);
+    line-height: 2;
+    color: var(--ink);
+  }
+  .closing-inner p.dim{ color: var(--ink-muted); font-size: 0.85em; }
+  .closing-cta{ margin-top: 40px; }
+
+  footer{
+    text-align:center; padding: 30px 24px 50px; color: var(--ink-dim); font-size: 11.5px;
+    letter-spacing: .04em;
+  }
+
+  @media (max-width: 640px){
+    .universe-field{ height: 460px; }
+    .universe-stats{ gap: 24px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="ambient"></canvas>
+
+<!-- 01 HERO -->
+<section class="hero">
+  <div class="hero-star"></div>
+  <p class="hero-eyebrow">모든 별은 누군가 발견한 작은 불편입니다</p>
+  <h1 class="hero-title">세상을 바꾸는 아이디어는<br>거대한 문제보다 작은 틈에서 시작됩니다.</h1>
+  <p class="hero-sub">불편의 [ 틈 ] 을 편리함으로</p>
+  <div class="hero-cta">
+    <button class="btn" onclick="document.getElementById('input-section').scrollIntoView({behavior:'smooth'})">당신의 틈 남기기 →</button>
+  </div>
+  <div class="scroll-hint">SCROLL</div>
+</section>
+
+<!-- 02 INPUT -->
+<section class="input-section" id="input-section">
+  <div class="input-card">
+    <p class="input-kicker">✦</p>
+    <h2 class="input-title">발견한<br>작은 불편은 무엇인가요?</h2>
+    <textarea class="gap-textarea" id="gap-input" placeholder="예) 버스에서 우산을 둘 곳이 없다."></textarea>
+    <p class="input-example">한 문장이면 충분합니다. 당신의 틈은 우주 속 하나의 별이 됩니다.</p>
+    <div class="input-actions">
+      <button class="btn" id="submit-gap">⭐ 별로 남기기</button>
+    </div>
+  </div>
+</section>
+
+<!-- transform stage overlay -->
+<div class="transform-stage" id="transform-stage">
+  <div class="transform-text" id="transform-text"></div>
+  <div class="transform-star" id="transform-star"></div>
+  <div class="transform-caption" id="transform-caption">당신의 틈이 세상 속에 기록되었습니다.</div>
+</div>
+
+<!-- 04 UNIVERSE -->
+<section class="universe-section" id="universe-section">
+  <div class="universe-header">
+    <p class="universe-kicker">✦ 틈의 우주</p>
+    <h2 class="universe-title">별 하나가, 한 사람의 불편입니다</h2>
+    <p class="universe-desc">비슷한 불편은 서로 연결되어 별자리가 됩니다. 별을 눌러 이야기를 확인하세요.</p>
+  </div>
+  <div class="universe-field" id="universe-field"></div>
+</section>
+
+<!-- STAR CARD overlay -->
+<div class="card-overlay" id="card-overlay">
+  <div class="star-card">
+    <button class="card-close" id="card-close">✕</button>
+    <div class="card-star-icon">★ ★ ★ ★ ★ ★</div>
+    <p class="card-text" id="card-text"></p>
+    <div class="card-tags" id="card-tags"></div>
+  </div>
+</div>
+
+<!-- 09 CLOSING -->
+<section class="closing" id="closing">
+  <div class="closing-inner" id="closing-inner">
+    <p>별은 처음부터 별자리가 아니었습니다.</p>
+    <p>누군가 발견한 작은 빛이 모여<br>서로 연결될 때, 하나의 의미를 갖게 됩니다.</p>
+    <p class="dim">디자인도 마찬가지입니다.</p>
+    <p>당신이 발견한 작은 틈은<br>누군가의 아이디어와 연결되어,<br>더 나은 일상을 만드는 시작점이 됩니다.</p>
+    <div class="closing-cta">
+      <button class="btn btn-ghost" onclick="window.scrollTo({top:0, behavior:'smooth'})">처음으로 돌아가기</button>
+    </div>
+  </div>
+</section>
+
+<footer>틈 — 불편의 [틈]을 편리함으로</footer>
+
+<script>
+/* ---------------- ambient starfield backdrop ---------------- */
+(function(){
+  const canvas = document.getElementById('ambient');
+  const ctx = canvas.getContext('2d');
+  let w, h, stars = [];
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = document.documentElement.scrollHeight;
+    stars = [];
+    const count = Math.floor((w*h)/9000);
+    for(let i=0;i<count;i++){
+      stars.push({
+        x: Math.random()*w,
+        y: Math.random()*h,
+        r: Math.random()*1.2 + 0.3,
+        a: Math.random()*0.6 + 0.15,
+        speed: Math.random()*0.4 + 0.1,
+        phase: Math.random()*Math.PI*2
+      });
+    }
+  }
+  let t = 0;
+  function draw(){
+    t += 0.01;
+    ctx.clearRect(0,0,w,h);
+    for(const s of stars){
+      const flicker = 0.5 + 0.5*Math.sin(t*s.speed + s.phase);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(244,199,126,${(s.a*flicker).toFixed(3)})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+  setTimeout(resize, 800); // catch late layout growth
+})();
+
+/* ---------------- star data (empty until the person adds one) ---------------- */
+let stars = [];
+let bgStars = [];
+(function(){
+  for(let i=0;i<46;i++){
+    bgStars.push({ x: Math.random()*96+2, y: Math.random()*94+3, r: Math.random()*1.4+0.6 });
+  }
+})();
+
+/* ---------------- render universe field ---------------- */
+const NS = 'http://www.w3.org/2000/svg';
+const field = document.getElementById('universe-field');
+let svg;
+
+function renderField(){
+  field.innerHTML = '';
+  svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  field.appendChild(svg);
+
+  // background ambient dots
+  bgStars.forEach(b=>{
+    const c = document.createElementNS(NS,'circle');
+    c.setAttribute('cx', b.x); c.setAttribute('cy', b.y); c.setAttribute('r', b.r);
+    c.setAttribute('fill', 'rgba(244,199,126,0.28)');
+    svg.appendChild(c);
+  });
+
+  if(stars.length === 0){
+    const empty = document.createElementNS(NS,'text');
+    empty.setAttribute('x', 50); empty.setAttribute('y', 50);
+    empty.setAttribute('text-anchor','middle');
+    empty.setAttribute('fill', 'rgba(236,232,221,0.35)');
+    empty.setAttribute('font-size', '3.4');
+    empty.setAttribute('font-family', "'Noto Sans KR', sans-serif");
+    empty.textContent = '아직 남겨진 틈이 없습니다';
+    svg.appendChild(empty);
+  }
+
+  // interactive stars
+  stars.forEach(s=>{
+    const g = document.createElementNS(NS,'g');
+    g.setAttribute('class','field-star');
+    g.style.cursor = 'pointer';
+    const core = document.createElementNS(NS,'circle');
+    core.setAttribute('class','core');
+    core.setAttribute('cx', s.x); core.setAttribute('cy', s.y);
+    core.setAttribute('r', 1.6);
+    core.setAttribute('fill', '#f4c77e');
+    core.style.filter = 'drop-shadow(0 0 3px rgba(244,199,126,0.7))';
+    g.appendChild(core);
+    const label = document.createElementNS(NS,'text');
+    label.setAttribute('x', s.x); label.setAttribute('y', s.y - 2.6);
+    label.setAttribute('text-anchor','middle');
+    label.textContent = s.text.length > 16 ? s.text.slice(0,16)+'…' : s.text;
+    g.appendChild(label);
+    g.addEventListener('click', ()=> openCard(s.id));
+    svg.appendChild(g);
+  });
+}
+renderField();
+
+/* ---------------- star card ---------------- */
+const overlay = document.getElementById('card-overlay');
+const cardText = document.getElementById('card-text');
+const cardTags = document.getElementById('card-tags');
+
+function openCard(id){
+  const s = stars.find(st=>st.id===id);
+  if(!s) return;
+  cardText.textContent = s.text;
+  cardTags.innerHTML = s.cat.map(c=>`<span class="tag">${c}</span>`).join('');
+  overlay.classList.add('active');
+}
+document.getElementById('card-close').addEventListener('click', ()=> overlay.classList.remove('active'));
+overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.classList.remove('active'); });
+
+/* ---------------- input -> star transform ---------------- */
+const stage = document.getElementById('transform-stage');
+const tText = document.getElementById('transform-text');
+const tStar = document.getElementById('transform-star');
+const tCaption = document.getElementById('transform-caption');
+const inputEl = document.getElementById('gap-input');
+
+document.getElementById('submit-gap').addEventListener('click', ()=>{
+  const value = inputEl.value.trim();
+  if(!value){ inputEl.focus(); return; }
+
+  tText.textContent = value;
+  tText.className = 'transform-text';
+  tStar.className = 'transform-star';
+  tCaption.className = 'transform-caption';
+  stage.classList.add('active');
+
+  requestAnimationFrame(()=>{
+    setTimeout(()=> tText.classList.add('shrink'), 700);
+    setTimeout(()=> tStar.classList.add('show'), 700);
+    setTimeout(()=> tCaption.classList.add('show'), 1900);
+    setTimeout(()=>{
+      stage.classList.remove('active');
+      addStar(value);
+      inputEl.value = '';
+      document.getElementById('universe-section').scrollIntoView({behavior:'smooth'});
+    }, 3300);
+  });
+});
+
+function addStar(text){
+  const id = stars.length ? Math.max(...stars.map(s=>s.id))+1 : 1;
+  const newStar = {
+    id, text,
+    cat: ['새로운 틈'],
+    likes: 1,
+    x: 10 + Math.random()*80,
+    y: 10 + Math.random()*80
+  };
+  stars.push(newStar);
+  renderField();
+  gapCount += 1;
+  updateStats();
+  setTimeout(()=> openCard(id), 400);
+}
+
+/* ---------------- live counters ---------------- */
+const statGaps = document.getElementById('stat-gaps');
+const statConst = document.getElementById('stat-const');
+function animateNumber(el, target){
+  const start = parseInt(el.textContent.replace(/,/g,'')) || 0;
+  const dur = 900;
+  const t0 = performance.now();
+  function frame(now){
+    const p = Math.min(1, (now-t0)/dur);
+    const val = Math.floor(start + (target-start)*p);
+    el.textContent = val.toLocaleString('ko-KR');
+    if(p<1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+function updateStats(){
+  animateNumber(statGaps, gapCount);
+  animateNumber(statConst, constCount);
+}
+updateStats();
+setInterval(()=>{
+  gapCount += Math.floor(Math.random()*3);
+  if(Math.random() < 0.15) constCount += 1;
+  updateStats();
+}, 4000);
+
+/* ---------------- closing reveal ---------------- */
+const closingInner = document.getElementById('closing-inner');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) closingInner.classList.add('show'); });
+}, { threshold: 0.4 });
+io.observe(closingInner);
+</script>
+</body>
+</html>
